@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "tulip",
+	"version": "${version}",
+	"name": "Tulip",
+	"description": "Simple config manager for easy saving and loading data from config files",
+	"authors": [
+		"TimeSquared (TimeCubed on github)"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/tulip/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.timecubed.tulip.MainServer"
+		],
+		"client": [
+          "io.github.timecubed.tulip.MainClient"
+		]
+	},
+	"mixins": [
+		"tulip.mixins.json",
+		{
+			"config": "tulip.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.14.21",
+		"minecraft": ">=1.19",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
