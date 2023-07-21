@@ -69,11 +69,15 @@ public class TulipConfigManager {
 
 	/**
 	 * Loads your config file and seperates it into key-value pairs for getting values back.
-	 * Safe version, this handles any exception automatically for you.
+	 * Safe version, this handles any exception automatically for you. As an extra feature,
+	 * this method will also ensure that your config file will save after loading as well
+	 * so that if you add any new properties and the save file is not updated then your mod
+	 * won't break.
 	 */
 	public void load() {
 		try {
 			loadUnsafe();
+			save();
 		} catch (IOException ioException) {
 			MainServer.LOGGER.error("Could not load Tulip config file for mod " + modid, ioException);
 		}
