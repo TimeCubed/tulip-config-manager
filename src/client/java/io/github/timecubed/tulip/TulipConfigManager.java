@@ -7,80 +7,97 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
+@SuppressWarnings("unused")
 public class TulipConfigManager {
 	Properties properties = new Properties();
 	Properties defaultProperties = new Properties();
-	String configPath, modid;
+	String configPath, modID;
 	
 	/**
 	 * Creates a new instance of the Tulip Config Manager.
 	 *
-	 * @param modid Your mod's id for config. Optionally, you can enable absolute path if you want 
-	 * to save your file to a custom path, in which case provide the full path in this parameter 
-	 * (including file name and extension). Avoid using spaces in your mod id.
-	 * 
-	 * @param absolutePath Enable this to be able to provide a custom path instead of the 
-	 * default one. Make sure your file extension ends with .properties. If you use spaces,
-	 * then note that this may break stuff unintentionally.
+	 * @param modID Your mod's id for config. Saves configs to the standard fabric config
+	 *              folder, with the mod ID as the name of the config file.
 	 */
 	
-	public TulipConfigManager(String modid, Boolean absolutePath) {
+	public TulipConfigManager(String modID, Boolean absolutePath) {
 		if (!absolutePath) 
 			this.configPath = FabricLoader.getInstance()
 				.getConfigDir().toString() + 
-				"\\" + modid + ".properties";
+				"\\" + modID + ".properties";
 		else
-			this.configPath = modid;
+			this.configPath = modID;
 
-		this.modid = modid;
+		this.modID = modID;
+	}
+	
+	/**
+	 *
+	 * @param absolutePath The absolute path to the config file, including the name and extension.
+	 * @param modID Your mod's ID.
+	 */
+	public TulipConfigManager(String absolutePath, String modID) {
+		this.configPath = modID;
+		
+		this.modID = modID;
 	}
 
 	/**
 	 * Saves your config to a file. Make sure to set the default values for your config by using
 	 * the {@code saveProperty()} method, otherwise your config file may be broken.
-	 * 
+	 * <p>
 	 * Safe version, this handles any exception automatically for you.
 	 */
 	public void save() {
 		try {
 			saveUnsafe();
 		} catch (IOException ioException) {
-			MainServer.LOGGER.error("Could not save Tulip config file for mod " + modid, ioException);
+			MainServer.LOGGER.error("Could not save Tulip config file for mod {}", modID, ioException);
 		}
 	}
 	
 	/**
 	 * Saves your config to a file. Make sure to set the default values for your config by using 
 	 * the {@code saveProperty()} method, otherwise your config file may be broken.
-	 * 
-	 * Unsafe version, use this if you want to run custom code when saving fails
+	 * <p>
+	 * Unsafe version, use this if you want to run custom code when saving fails.
 	 *
-	 * @throws IOException Exception is uncommon to occur, but can still occur if the file
-	 * path is inaccessible (a.k.a. requires administrator access, or path does not exist).
+	 * @throws IOException Thrown when the manager fails to save the file
+	 * (invalid path, file already exists, requires administrator permissions, etc.).
 	 */
 	public void saveUnsafe() throws IOException {
-		MainServer.LOGGER.info("Saving Tulip config to path '" + configPath + "'...");
+		MainServer.LOGGER.info("Saving Tulip config to path '{}'...", configPath);
 		
-		if (!fileExists()) {
-			MainServer.LOGGER.warn("Tulip config for mod " + modid + " does not exist. Creating a new config file, but the values may be wrong");
+		if (fileExists()) {
+			MainServer.LOGGER.warn("Tulip config for mod {} does not exist. Creating a new config file.", modID);
 		}
 		
 		createFileWithProperties();
 	}
 
 	/**
-	 * Loads your config file and seperates it into key-value pairs for getting values back.
-	 * Safe version, this handles any exception automatically for you. As an extra feature,
-	 * this method will also ensure that your config file will save after loading as well
-	 * so that if you add any new properties and the save file is not updated then your mod
-	 * won't break.
+	 * Loads your config file and separates it into key-value pairs for getting values back.
+	 * <p>
+	 * Safe version, this handles any exception automatically for you. This method will also
+	 * save your config after loading, to sync changes between mod versions.
 	 */
 	public void load() {
 		try {
 			loadUnsafe();
 			save();
 		} catch (IOException ioException) {
-			MainServer.LOGGER.error("Could not load Tulip config file for mod " + modid, ioException);
+			MainServer.LOGGER.error("Could not load Tulip config file for mod {}", modID, ioException);
+		}
+	}
+	
+	/**
+	 * Same as {@code load()}, but doesn't save after loading.
+	 */
+	public void loadWithoutSave() {
+		try {
+			loadUnsafe();
+		} catch (IOException ioException) {
+			MainServer.LOGGER.error("Could not load Tulip config file for mod {}", modID, ioException);
 		}
 	}
 	
@@ -92,10 +109,10 @@ public class TulipConfigManager {
 	 * the file path is inaccessible (a.k.a. requires administrator access).
 	 */
 	public void loadUnsafe() throws IOException {
-		MainServer.LOGGER.info("Loading Tulip config from path '" + configPath + "'...");
+		MainServer.LOGGER.info("Loading Tulip config from path '{}'...", configPath);
 		
 		if (!fileExists()) {
-			MainServer.LOGGER.error("Tulip config for mod " + modid + " does not exist. Tulip will create a new config file, but this error should be reported.");
+			MainServer.LOGGER.error("Tulip config for mod {} does not exist. Tulip will create a new config file, but this error should be reported.", modID);
 			createFileWithProperties();
 		}
 		File configFile = new File(configPath);
@@ -106,8 +123,8 @@ public class TulipConfigManager {
 	private void createFileWithProperties() throws IOException {
 		File newConfigFile = new File(configPath);
 		
-		if (!newConfigFile.exists()) {
-			newConfigFile.createNewFile();
+		if (!newConfigFile.createNewFile()) {
+			throw new IOException("File already exists");
 		}
 		
 		properties.store(new FileWriter(newConfigFile), null);
@@ -195,6 +212,7 @@ public class TulipConfigManager {
 		return properties.getProperty(key);
 	}
 	
+	@SuppressWarnings("inverted")
 	private boolean fileExists() {
 		File file = new File(configPath);
 		
