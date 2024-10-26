@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public class TulipConfigManager {
 	Properties properties = new Properties();
+	Properties defaultProperties = new Properties();
 	String configPath, modid;
 	
 	/**
@@ -113,15 +114,26 @@ public class TulipConfigManager {
 	}
 	
 	/**
-	 * Saves a property entry to the config. This is used to set default values 
-	 * only, but should be overridden when you use the {@code load()} method.
-	 * Optionally, you can set a property's values if you want to overwrite it.
+	 * Saves a property entry to the config. Overwrites the values of properties
+	 * if they already exist.
 	 *
-	 * @param key Your property's key, used as an identifier to get back your property's value
+	 * @param key Your property's key
 	 * @param value Your property's value
 	 */
 	public void saveProperty(String key, Object value) {
 		properties.setProperty(key, String.valueOf(value));
+	}
+	
+	/**
+	 * Sets the initial value of a property. Does not overwrite the values of
+	 * properties.
+	 * @param key Your property's key
+	 * @param defaultValue The default value for the property
+	 */
+	public void setDefault(String key, Object defaultValue) {
+		if (!properties.containsKey(key)) {
+			properties.setProperty(key, String.valueOf(defaultValue));
+		}
 	}
 	
 	/**
