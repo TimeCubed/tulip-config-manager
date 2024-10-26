@@ -9,9 +9,8 @@ import java.util.Properties;
 
 @SuppressWarnings("unused")
 public class TulipConfigManager {
-	Properties properties = new Properties();
-	Properties defaultProperties = new Properties();
-	String configPath, modID;
+	final Properties properties = new Properties();
+	final String configPath, modID;
 	
 	/**
 	 * Creates a new instance of the Tulip Config Manager.

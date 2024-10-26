@@ -7,10 +7,6 @@
 	"authors": [
 		"TimeSquared (TimeCubed on github)"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
 	"license": "MIT",
 	"icon": "assets/tulip/icon.png",
 	"environment": "*",
