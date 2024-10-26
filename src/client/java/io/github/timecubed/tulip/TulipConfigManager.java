@@ -12,13 +12,7 @@ public class TulipConfigManager {
 	final Properties properties = new Properties();
 	final String configPath, modID;
 	
-	/**
-	 * Creates a new instance of the Tulip Config Manager.
-	 *
-	 * @param modID Your mod's id for config. Saves configs to the standard fabric config
-	 *              folder, with the mod ID as the name of the config file.
-	 */
-	
+	@Deprecated
 	public TulipConfigManager(String modID, Boolean absolutePath) {
 		if (!absolutePath) 
 			this.configPath = FabricLoader.getInstance()
@@ -31,6 +25,21 @@ public class TulipConfigManager {
 	}
 	
 	/**
+	 * Creates a new instance of the Tulip Config Manager.
+	 *
+	 * @param modID Your mod's id for config. Saves configs to the standard fabric config
+	 *              folder, with the mod ID as the name of the config file.
+	 */
+	public TulipConfigManager(String modID) {
+		this.configPath = FabricLoader.getInstance()
+				.getConfigDir().toString() +
+				"\\" + modID + ".properties";
+		
+		this.modID = modID;
+	}
+	
+	/**
+	 * Creates a new instance of the Tulip Config Manager.
 	 *
 	 * @param absolutePath The absolute path to the config file, including the name and extension.
 	 * @param modID Your mod's ID.
